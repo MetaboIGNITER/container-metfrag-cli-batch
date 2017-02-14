@@ -7,15 +7,15 @@
   </requirements>
   <description>Run MetFrag with given MetFrag parameters</description>
   <command><![CDATA[
-	java -jar /usr/local/bin/MetFragCLI.jar "`cat $inputfolder` ResultsFile=$outputfile";
+	java -jar /usr/local/bin/MetFragCLI.jar "`cat $inputfile` ResultsFile=$outputfile NumberThreads=1 $additionalparameters";
   ]]>
   </command>
   <inputs>
-    <param name="inputfolder" type="data" format="txt" optional="False" label="Input folder MetFrag parameter files" />
+    <param name="inputfile" type="data" format="txt" optional="False" label="Input file containing MetFrag parameters" />
+    <param name="additionalparameters" type="text" value="" optional="True" label="Additional Parameters" help="Add additional parameters to the MetFrag command line. This can include e.g. access information for a local MetChem database instance." />
   </inputs>
   <outputs>
     <data name="outputfile" type="text" format="csv" label="Output file containing MetFrag results" />
   </outputs>
   <help>Run MetFrag with given MetFrag parameters.</help>
 </tool>
-
