@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# install required packages
+apt-get update -y && apt-get install -y --no-install-recommends wget ca-certificates
+
 # get test case data
 mkdir /tmp/testfiles
 wget -O /tmp/testfiles/test_case_candidates.csv https://github.com/phnmnl/container-metfrag-cli-batch/raw/develop/testfiles/test_case_candidates.csv
