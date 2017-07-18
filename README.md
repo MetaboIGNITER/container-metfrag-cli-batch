@@ -52,3 +52,4 @@ For direct docker usage:
 ```bash
 docker run -v /data:/data metfrag-cli-batch InputFile=/data/parameters.txt
 ```
+## Publications
