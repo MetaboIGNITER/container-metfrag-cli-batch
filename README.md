@@ -1,5 +1,5 @@
 # Metfrag-CLI-Batch
-Version: 0.1
+Version: 2.4.2
 
 ## Short Description
 
@@ -33,6 +33,7 @@ The Metfrag-CLI-Batch container gets either a file or folder containing paramete
 ## Container Contributors
 
 - [Christoph Ruttkies](https://github.com/c-ruttkies) (IPB-Halle)
+- [Payam Emami](https://github.com/PayamEmami) (Uppsala University)
 
 ## Git Repository
 
@@ -41,15 +42,32 @@ The Metfrag-CLI-Batch container gets either a file or folder containing paramete
 
 ## Installation 
 
-```bash
+metfrag-cli-batch is present on all PhenoMeNal Galaxy instances on deployed Cloud Research Environments, under the MS category in the tool bar to the left of the screen. No installation is needed hence on PhenoMeNal Cloud Research Environments.
+
+For advanced Docker usage:
+
+- Go to the directory where the dockerfile is.
+- Create container from dockerfile:
+
+```
 docker build -t metfrag-cli-batch .
+```
+
+Alternatively, pull from repo:
+
+```
+docker pull container-registry.phenomenal-h2020.eu/phnmnl/metfrag-cli-batch
 ```
 
 ## Usage Instructions
 
-For direct docker usage:
+On a PhenoMeNal Cloud Research Environment Galaxy environment, go to MS tools tool category, and then click on metfrag-cli-batch.
 
-```bash
+Through docker
+
+```
 docker run -v /data:/data metfrag-cli-batch InputFile=/data/parameters.txt
 ```
+
+
 ## Publications
