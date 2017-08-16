@@ -24,6 +24,10 @@ RUN wget -O /usr/local/bin/MetFragCLI.jar http://msbi.ipb-halle.de/~cruttkie/92f
 ADD runTest1.sh /usr/local/bin/runTest1.sh
 RUN chmod +x /usr/local/bin/runTest1.sh
 
+# Add metfrag.sh
+ADD metfrag.sh /usr/local/bin/metfrag.sh
+RUN chmod +x /usr/local/bin/metfrag.sh
+
 # Define Entry point script
 #ENTRYPOINT ["java", "-jar", "/usr/local/bin/MetFragCLI.jar"]
 
