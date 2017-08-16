@@ -1,12 +1,15 @@
 FROM ubuntu:16.04
 
-LABEL software.version=2.4.2
-LABEL version=0.1
-LABEL software=metfrag-cli-batch
-
 MAINTAINER PhenoMeNal-H2020 Project ( phenomenal-h2020-users@googlegroups.com )
 
+LABEL software.version=2.4.2
+LABEL version=0.2
+LABEL software=metfrag-cli-batch
 LABEL Description="MetFrag command line interface for batch processing."
+LABEL website="https://msbi.ipb-halle.de/MetFrag/"
+LABEL documentation="https://github.com/c-ruttkies/MetFrag"
+LABEL license="https://github.com/phnmnl/container-midcor/blob/master/License.txt"
+LABEL tags="Metabolomics"
 
 # Update & upgrade sources
 RUN apt-get -y update
@@ -23,6 +26,10 @@ RUN wget -O /usr/local/bin/MetFragCLI.jar http://msbi.ipb-halle.de/~cruttkie/92f
 # Add testing to container
 ADD runTest1.sh /usr/local/bin/runTest1.sh
 RUN chmod +x /usr/local/bin/runTest1.sh
+
+# Add metfrag.sh
+ADD metfrag.sh /usr/local/bin/metfrag.sh
+RUN chmod +x /usr/local/bin/metfrag.sh
 
 # Define Entry point script
 #ENTRYPOINT ["java", "-jar", "/usr/local/bin/MetFragCLI.jar"]
