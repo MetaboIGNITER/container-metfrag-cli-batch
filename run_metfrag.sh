@@ -1,4 +1,6 @@
 #!/bin/bash
+PARAMETERFILE=""
+PARAMETERFILES=""
 ADDITIONALPARAMETERS=""
 LOCALDATABASEPATH=""
 RESULTSPATH=""
@@ -9,6 +11,10 @@ do
     case $key in
             -p|--parameterfile)
             PARAMETERFILE="$2"
+            shift # past argument
+        ;;
+	    -pp|--parameterfiles)
+            PARAMETERFILES="$2"
             shift # past argument
         ;;
             -a|--additionalparameters)
@@ -33,22 +39,45 @@ do
     esac
     shift # past argument or value
 done
-cmds="`cat $PARAMETERFILE`"
-if [ "$ADDITIONALPARAMETERS" != "" ]; then
-    cmds="$cmds $ADDITIONALPARAMETERS"
+if [ "$PARAMETERFILE" == "" ] && [ "$PARAMETERFILES" == "" ]; then
+    echo "Error: ParameterFile or ParameterFiles needs to be defined. Use -p (ParameterFile) or -pp (ParameterFiles) option."
+    exit 1
 fi
-if [ "$LOCALDATABASEPATH" != "" ]; then
-    cmds="$cmds LocalDatabasePath=$LOCALDATABASEPATH"
+if [ "$PARAMETERFILE" != "" ] && [ "$PARAMETERFILES" != "" ]; then
+    echo "Error: ParameterFile and ParameterFiles are defined. Which one shall I use?"
+    exit 1
 fi
+# check result folder/file
 if [ "$RESULTSPATH" == "" ] && [ "$RESULTSFILE" == "" ]; then
     echo "Error: ResultsPath or ResultsFile needs to be defined. Use -r (ResultsPath) or -f (ResultsFile) option."
     exit 1
 fi
-if [ "$RESULTSFILE" != "" ]; then
-    cmds="$cmds ResultsFile=$RESULTSFILE"
+# define array of filenames
+declare -a files
+if [ "$PARAMETERFILE" != "" ]; then
+    IFS=',' read -r -a files <<< $PARAMETERFILE
 else
-    cmds="$cmds ResultsPath=$RESULTSPATH"
+    IFS=',' read -r -a files <<< $PARAMETERFILES
 fi
-
+# loop over file names to create commands arguments for gnu parallel
+cmdfile=$(mktemp)
+cmdprefix="java -Xmx2048m -Xms1024m -jar /usr/local/bin/MetFragCLI.jar"
+for file in "${files[@]}"; do
+    cmd="$cmdprefix $(cat $file | sed "s/PeakListString=\(.*\)\s/PeakListString=\"\1\" /" | sed "s/SampleName=.*\/\(.*\)\(\s\|$\)/SampleName=\1 /")"
+    if [ "$ADDITIONALPARAMETERS" != "" ]; then
+        cmd="$cmd $ADDITIONALPARAMETERS"
+    fi
+    if [ "$LOCALDATABASEPATH" != "" ]; then
+        cmd="$cmd LocalDatabasePath=$LOCALDATABASEPATH"
+    fi
+    if [ "$RESULTSFILE" != "" ]; then
+        cmd="$cmd ResultsFile=$RESULTSFILE"
+    else
+        cmd="$cmd ResultsPath=$RESULTSPATH"
+    fi
+    cmd="$cmd NumberThreads=1"
+    echo $cmd >> $cmdfile
+done
+echo "wrote commands into $cmdfile"
 # run the command
-java -Xmx2048m -Xms1024m -jar /usr/local/bin/MetFragCLI.jar "$cmds NumberThreads=1"
+cat $cmdfile | parallel --load 80% --noswap
