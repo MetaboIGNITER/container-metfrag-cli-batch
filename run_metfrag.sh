@@ -80,6 +80,9 @@ for file in "${files[@]}"; do
 done
 echo "wrote commands into $cmdfile"
 # run the command
-cat $cmdfile | parallel --load 80% --noswap
+# cat $cmdfile | parallel --load 80% --noswap
+while read line; do
+    echo $line | bash
+done < $cmdfile
 echo $RESULTSPATH
 ls $RESULTSPATH
