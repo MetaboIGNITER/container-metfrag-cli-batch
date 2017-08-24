@@ -5,6 +5,7 @@ ADDITIONALPARAMETERS=""
 LOCALDATABASEPATH=""
 RESULTSPATH=""
 RESULTSFILE=""
+ZIPFILE=""
 while [[ $# -gt 1 ]]
 do
     key="$1"
@@ -32,6 +33,10 @@ do
             -f|--resultsfile)
             RESULTSFILE="$2"
             shift # past argument
+	;;
+	    -z|--zipfile)	    
+	    ZIPFILE="$2"
+	    shift
         ;;
             *)
             # unknown option
@@ -81,4 +86,6 @@ done
 echo "wrote commands into $cmdfile"
 # run the command
 cat $cmdfile | parallel --load 80% --noswap
-ls $RESULTSPATH
+if [ "$ZIPFILE" != "" ]; then
+    zip -j -r $ZIPFILE $RESULTSPATH
+fi
