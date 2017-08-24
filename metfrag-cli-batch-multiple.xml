@@ -8,7 +8,8 @@
   <description>Run MetFrag with a multiple parameter set on one node.</description>
   <command><![CDATA[
     mkdir test;
-    bash /usr/local/bin/run_metfrag.sh -pp $metfrag_cli_batch_multiple_input_1 -r test -z metfrag_cli_batch_output_1
+    rm $metfrag_cli_batch_output_1;
+    bash /usr/local/bin/run_metfrag.sh -pp $metfrag_cli_batch_multiple_input_1 -r test -z $metfrag_cli_batch_output_1
     #if $metfrag_cli_batch_multiple_database_file != "None"
         -l "$metfrag_cli_batch_multiple_database_file"
     #end if
