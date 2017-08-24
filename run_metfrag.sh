@@ -87,5 +87,6 @@ echo "wrote commands into $cmdfile"
 # run the command
 cat $cmdfile | parallel --load 80% --noswap
 if [ "$ZIPFILE" != "" ]; then
-    zip -j -r $ZIPFILE $RESULTSPATH
+    echo "zip -r $ZIPFILE $RESULTSPATH"
+    zip -r $ZIPFILE $RESULTSPATH
 fi
