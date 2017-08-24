@@ -81,3 +81,5 @@ done
 echo "wrote commands into $cmdfile"
 # run the command
 cat $cmdfile | parallel --load 80% --noswap
+echo $RESULTSPATH
+ls $RESULTSPATH
