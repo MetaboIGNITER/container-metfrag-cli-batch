@@ -6,6 +6,7 @@ LOCALDATABASEPATH=""
 RESULTSPATH=""
 RESULTSFILE=""
 ZIPFILE=""
+RENAMERESULTS="false"
 while [[ $# -gt 1 ]]
 do
     key="$1"
@@ -37,6 +38,10 @@ do
 	    -z|--zipfile)	    
 	    ZIPFILE="$2"
 	    shift
+        ;;
+	    -rn|--rename)
+            RENAMERESULTS="$2"
+            shift
         ;;
             *)
             # unknown option
@@ -86,11 +91,11 @@ done
 echo "wrote commands into $cmdfile"
 # run the command
 cat $cmdfile | parallel --load 80% --noswap
-#if [ "$RESULTSPATH" != "" ]; then
-#    for i in $(ls $RESULTSPATH); do
-#        mv $RESULTSPATH/$i $RESULTSPATH/$(echo $i | sed "s/\.csv//")
-#    done
-#fi
+if [ "$RESULTSPATH" != "" ] && [ "$RENAMERESULTS" == "true" ]; then
+    for i in $(ls $RESULTSPATH); do
+        mv $RESULTSPATH/$i $RESULTSPATH/$(echo $i | sed "s/\.csv//")
+    done
+fi
 if [ "$ZIPFILE" != "" ]; then
     zip -j -r $ZIPFILE $RESULTSPATH
 fi
