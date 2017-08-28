@@ -86,11 +86,11 @@ done
 echo "wrote commands into $cmdfile"
 # run the command
 cat $cmdfile | parallel --load 80% --noswap
-if [ "$RESULTSPATH" != "" ]; then
-    for i in $(ls $RESULTSPATH); do
-        mv $RESULTSPATH/$i $RESULTSPATH/$(echo $i | sed "s/\.csv//")
-    done
-fi
+#if [ "$RESULTSPATH" != "" ]; then
+#    for i in $(ls $RESULTSPATH); do
+#        mv $RESULTSPATH/$i $RESULTSPATH/$(echo $i | sed "s/\.csv//")
+#    done
+#fi
 if [ "$ZIPFILE" != "" ]; then
     zip -j -r $ZIPFILE $RESULTSPATH
 fi
