@@ -95,7 +95,28 @@ echo "wrote commands into $cmdfile"
 cat $cmdfile | parallel --load 80% --noswap
 if [ "$RESULTSPATH" != "" ] && [ "$RENAMERESULTS" == "true" ]; then
     for i in $(ls $RESULTSPATH); do
+        # extract mz, RT and fileName
+        IFS='_' read -r -a filesInfo <<< $(echo $i)
+        parentRT=${filesInfo[1]}
+        parentMZ=${filesInfo[2]}
+        fileName=$(echo $i | sed "s/.*__//" | sed "s/\..*//")
+        # add file name
+        awk -F, 'NR==1 {$1="fileName" FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
+        awk -v filename="$fileName" -F, 'NR>1 {$1=filename FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
+        # add mz
+        awk -F, 'NR==1 {$1="parentMZ" FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
+        awk -v mz="$parentMZ" -F, 'NR>1 {$1=mz FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
+        # add RT
+        awk -F, 'NR==1 {$1="parentRT" FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
+        awk -v rt="$parentRT" -F, 'NR>1 {$1=rt FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
+        # check if the header has been written.
+        if [ "$headerFlag" != "0" ]; then
+        sed '1d' $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp"; mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i 
+        fi
+        # save results
+        cat "$RESULTSPATH/$i" >> $outputFile
         mv $RESULTSPATH/$i $RESULTSPATH/$(echo $i | sed "s/\.csv//")
+        headerFlag="1"
     done
 fi
 if [ "$ZIPFILE" != "" ]; then
