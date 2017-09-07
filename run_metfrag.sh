@@ -98,6 +98,8 @@ done
 echo "wrote commands into $cmdfile"
 # define join function
 function join { local IFS="$1"; shift; echo "$*"; }
+# define header flag 
+headerFlag="0"
 # run the command
 cat $cmdfile | parallel --load 80% --noswap
 if [ "$RESULTSPATH" != "" ] && [ "$RENAMERESULTS" == "true" ]; then
