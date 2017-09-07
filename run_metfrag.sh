@@ -79,7 +79,7 @@ cmdfile=$(mktemp)
 cmdprefix="java -Xmx2048m -Xms1024m -jar /usr/local/bin/MetFragCLI.jar"
 for file in "${files[@]}"; do
     while read line; do    
-	cmd="$cmdprefix $(cat $line | sed "s/PeakListString=\(.*\)\s/PeakListString=\"\1\" /" | sed "s/SampleName=.*\/\(.*\)\(\s\|$\)/SampleName=\1 /" | sed "s/SampleName=.*\\\\\/\(.*\)\(\s\|$\)/SampleName=\1 /")"
+	cmd="$cmdprefix $(echo ${line} | tr -d "\"" | sed "s/PeakListString=\(.*\)\s/PeakListString=\"\1\" /" | sed "s/SampleName=.*\/\(.*\)\(\s\|$\)/SampleName=\1 /" | sed "s/SampleName=.*\\\\\/\(.*\)\(\s\|$\)/SampleName=\1 /")"
         if [ "$ADDITIONALPARAMETERS" != "" ]; then
             cmd="$cmd $ADDITIONALPARAMETERS"
         fi
@@ -96,6 +96,8 @@ for file in "${files[@]}"; do
     done < $file
 done
 echo "wrote commands into $cmdfile"
+# define join function
+function join { local IFS="$1"; shift; echo "$*"; }
 # run the command
 cat $cmdfile | parallel --load 80% --noswap
 if [ "$RESULTSPATH" != "" ] && [ "$RENAMERESULTS" == "true" ]; then
@@ -104,7 +106,7 @@ if [ "$RESULTSPATH" != "" ] && [ "$RENAMERESULTS" == "true" ]; then
         IFS='_' read -r -a filesInfo <<< $(echo $i)
         parentRT=${filesInfo[1]}
         parentMZ=${filesInfo[2]}
-        fileName=$(echo $i | sed "s/.*__//" | sed "s/\..*//")
+        fileName=$(join _ ${filesInfo[@]:4})
         # add file name
         awk -F, 'NR==1 {$1="fileName" FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
         awk -v filename="$fileName" -F, 'NR>1 {$1=filename FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
