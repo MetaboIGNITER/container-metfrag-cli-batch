@@ -73,20 +73,22 @@ fi
 cmdfile=$(mktemp)
 cmdprefix="java -Xmx2048m -Xms1024m -jar /usr/local/bin/MetFragCLI.jar"
 for file in "${files[@]}"; do
-    cmd="$cmdprefix $(cat $file | sed "s/PeakListString=\(.*\)\s/PeakListString=\"\1\" /" | sed "s/SampleName=.*\/\(.*\)\(\s\|$\)/SampleName=\1 /")"
-    if [ "$ADDITIONALPARAMETERS" != "" ]; then
-        cmd="$cmd $ADDITIONALPARAMETERS"
-    fi
-    if [ "$LOCALDATABASEPATH" != "" ]; then
-        cmd="$cmd LocalDatabasePath=$LOCALDATABASEPATH"
-    fi
-    if [ "$RESULTSFILE" != "" ]; then
-        cmd="$cmd ResultsFile=$RESULTSFILE"
-    else
-        cmd="$cmd ResultsPath=$RESULTSPATH"
-    fi
-    cmd="$cmd NumberThreads=1"
-    echo $cmd >> $cmdfile
+    while read line; do    
+	cmd="$cmdprefix $(cat $line | sed "s/PeakListString=\(.*\)\s/PeakListString=\"\1\" /" | sed "s/SampleName=.*\/\(.*\)\(\s\|$\)/SampleName=\1 /" | sed "s/SampleName=.*\\\\\/\(.*\)\(\s\|$\)/SampleName=\1 /")"
+        if [ "$ADDITIONALPARAMETERS" != "" ]; then
+            cmd="$cmd $ADDITIONALPARAMETERS"
+        fi
+        if [ "$LOCALDATABASEPATH" != "" ]; then
+            cmd="$cmd LocalDatabasePath=$LOCALDATABASEPATH"
+        fi
+        if [ "$RESULTSFILE" != "" ]; then
+            cmd="$cmd ResultsFile=$RESULTSFILE"
+        else
+            cmd="$cmd ResultsPath=$RESULTSPATH"
+        fi
+        cmd="$cmd NumberThreads=1"
+        echo $cmd >> $cmdfile
+    done < $file
 done
 echo "wrote commands into $cmdfile"
 # run the command
