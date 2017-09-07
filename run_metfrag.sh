@@ -115,7 +115,6 @@ if [ "$RESULTSPATH" != "" ] && [ "$RENAMERESULTS" == "true" ]; then
         fi
         # save results
         cat "$RESULTSPATH/$i" >> $outputFile
-        mv $RESULTSPATH/$i $RESULTSPATH/$(echo $i | sed "s/\.csv//")
         headerFlag="1"
     done
 fi
