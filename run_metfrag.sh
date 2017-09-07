@@ -7,6 +7,7 @@ RESULTSPATH=""
 RESULTSFILE=""
 ZIPFILE=""
 RENAMERESULTS="false"
+outputFile=""
 while [[ $# -gt 1 ]]
 do
     key="$1"
@@ -37,6 +38,10 @@ do
 	;;
 	    -z|--zipfile)	    
 	    ZIPFILE="$2"
+	    shift
+        ;;
+	    -o|--output)	    
+	    outputFile="$2"
 	    shift
         ;;
 	    -rn|--rename)
