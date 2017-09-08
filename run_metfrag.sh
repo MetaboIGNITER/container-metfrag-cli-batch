@@ -104,6 +104,9 @@ headerFlag="0"
 cat $cmdfile | parallel --load 80% --noswap
 if [ "$RESULTSPATH" != "" ] && [ "$RENAMERESULTS" == "true" ]; then
     for i in $(ls $RESULTSPATH); do
+	# check number of lines
+	numberOfLines=$(wc -l < $RESULTSPATH/$i)
+	if [ ${numberOfLines} -eq "1" ]; then continue ; fi
         # extract mz, RT and fileName
         IFS='_' read -r -a filesInfo <<< $(echo $i)
         parentRT=${filesInfo[1]}
