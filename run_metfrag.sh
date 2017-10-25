@@ -3,6 +3,7 @@ ADDITIONALPARAMETERS=""
 LOCALDATABASEPATH=""
 RESULTSPATH=""
 RESULTSFILE=""
+ADDITIONALSCORES=""
 while [[ $# -gt 1 ]]
 do
     key="$1"
@@ -27,6 +28,10 @@ do
             RESULTSFILE="$2"
             shift # past argument
         ;;
+	    -s|--additionalscores)
+            ADDITIONALSCORES="$2"
+            shift # past argument
+	;;
             *)
             # unknown option
         ;;
@@ -34,6 +39,10 @@ do
     shift # past argument or value
 done
 cmds="`cat $PARAMETERFILE`"
+if [ "$ADDITIONALSCORES" != "" ]; then
+    # MetFragScoreTypes=FragmenterScore MetFragScoreWeights=1.0
+    cmds=$(echo $(echo $cmds | sed "s/MetFragScoreTypes=[A-Za-z0-9]\+/MetFragScoreTypes=FragmenterScore,$ADDITIONALSCORES/")" MetFragScoreWeights=1.0,"$(echo $ADDITIONALSCORES | sed "s/[A-Za-z0-9]\+/1.0/g")) 
+fi
 if [ "$ADDITIONALPARAMETERS" != "" ]; then
     cmds="$cmds $ADDITIONALPARAMETERS"
 fi
