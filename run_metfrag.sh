@@ -87,7 +87,7 @@ for file in "${files[@]}"; do
 	cmd="$cmdprefix $(echo ${line} | tr -d "\"" | sed "s/PeakListString=\(.*\)\s/PeakListString=\"\1\" /" | sed "s/SampleName=.*\/\(.*\)\(\s\|$\)/SampleName=\1 /" | sed "s/SampleName=.*\\\\\/\(.*\)\(\s\|$\)/SampleName=\1 /")"
 	if [ "$ADDITIONALSCORES" != "" ]; then
             # MetFragScoreTypes=FragmenterScore MetFragScoreWeights=1.0
-            cmds=$(echo $(echo $cmds | sed "s/MetFragScoreTypes=[A-Za-z0-9]\+/MetFragScoreTypes=FragmenterScore,$ADDITIONALSCORES/")" MetFragScoreWeights=1.0,"$(echo $ADDITIONALSCORES | sed "s/[A-Za-z0-9]\+/1.0/g")) 
+            cmd=$(echo $(echo $cmd | sed "s/MetFragScoreTypes=[A-Za-z0-9]\+/MetFragScoreTypes=FragmenterScore,$ADDITIONALSCORES/")" MetFragScoreWeights=1.0,"$(echo $ADDITIONALSCORES | sed "s/[A-Za-z0-9]\+/1.0/g")) 
         fi
         if [ "$ADDITIONALPARAMETERS" != "" ]; then
             cmd="$cmd $ADDITIONALPARAMETERS"
