@@ -1,7 +1,7 @@
 FROM ubuntu:16.04
 
 LABEL software.version=2.4.3
-LABEL version=0.4
+LABEL version=0.5
 LABEL software=metfrag-cli-batch
 
 MAINTAINER PhenoMeNal-H2020 Project ( phenomenal-h2020-users@googlegroups.com )
