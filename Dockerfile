@@ -3,7 +3,7 @@ FROM ubuntu:16.04
 MAINTAINER PhenoMeNal-H2020 Project ( phenomenal-h2020-users@googlegroups.com )
 
 LABEL software.version=2.4.3
-LABEL version=0.4
+LABEL version=0.5
 LABEL software=metfrag-cli-batch
 LABEL Description="MetFrag command line interface for batch processing."
 LABEL website="https://msbi.ipb-halle.de/MetFragBeta/"
