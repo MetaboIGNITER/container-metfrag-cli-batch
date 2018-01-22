@@ -1,9 +1,4 @@
 #!/bin/bash
-
-
-
-
-
 while [[ $# -gt 1 ]]
 do
 key="$1"

@@ -1,5 +1,5 @@
 # Metfrag-CLI-Batch
-Version: 2.4.2
+Version: 2.4.3
 
 ## Short Description
 
@@ -71,3 +71,7 @@ docker run -v /data:/data metfrag-cli-batch InputFile=/data/parameters.txt
 
 
 ## Publications
+
+## References
+
+O. Tange (2011): GNU Parallel - The Command-Line Power Tool, ;login: The USENIX Magazine, February 2011:42-47.
