@@ -81,7 +81,7 @@ else
 fi
 # loop over file names to create commands arguments for gnu parallel
 cmdfile=$(mktemp)
-cmdprefix="java -Xmx2048m -Xms1024m -jar /usr/local/bin/MetFragCLI.jar"
+cmdprefix="/usr/local/bin/metfrag -Xmx2048m -Xms1024m "
 for file in "${files[@]}"; do
     while read line; do    
 	cmd="$cmdprefix $(echo ${line} | tr -d "\"" | sed "s/PeakListString=\(.*\)\s/PeakListString=\"\1\" /" | sed "s/SampleName=.*\/\(.*\)\(\s\|$\)/SampleName=\1 /" | sed "s/SampleName=.*\\\\\/\(.*\)\(\s\|$\)/SampleName=\1 /")"
