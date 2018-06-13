@@ -1,7 +1,7 @@
-FROM quay.io/biocontainers/metfrag:2.4.2--1
+FROM quay.io/biocontainers/metfrag:2.4.5--1
 #FROM ubuntu:16.04
 
-LABEL software.version=2.4.2
+LABEL software.version=2.4.5
 LABEL version=0.7
 LABEL software=metfrag-cli-batch
 
