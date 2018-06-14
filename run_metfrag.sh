@@ -124,6 +124,7 @@ if [ "$RESULTSPATH" != "" ] && [ "$RENAMERESULTS" == "true" ]; then
         echo $i
 	# check number of lines
 	numberOfLines=$(wc -l < $RESULTSPATH/$i)
+        echo $numberOfLines
 	if [ ${numberOfLines} -eq "1" ]; then continue ; fi
         if [ ${numberOfLines} -eq "0" ]; then continue ; fi
         # extract mz, RT and fileName
