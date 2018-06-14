@@ -128,7 +128,7 @@ if [ "$RESULTSPATH" != "" ] && [ "$RENAMERESULTS" == "true" ]; then
 	if [ ${numberOfLines} -eq "1" ]; then continue ; fi
         if [ ${numberOfLines} -eq "0" ]; then continue ; fi
         # extract mz, RT and fileName
-        IFS='_' read -r -a filesInfo <<< $(echo $i)
+        IFS='_' read -r -a filesInfo <<< "$i"
         parentRT=${filesInfo[1]}
         parentMZ=${filesInfo[2]}
 	echo $parentRT $parentMZ
