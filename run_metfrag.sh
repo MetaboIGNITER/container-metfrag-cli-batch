@@ -134,8 +134,9 @@ if [ "$RESULTSPATH" != "" ] && [ "$RENAMERESULTS" == "true" ]; then
         echo $filename
         # add file name
         echo parentRT,parentMZ,fileName,$(head -n1 $RESULTSPATH/$i) > "$RESULTSPATH/$i.tmp"
+	echo "to include = ${parentRT},${parentMZ},${fileName}"
+        tail -n +2 $RESULTSPATH/$i | sed "s/^/${parentRT},${parentMZ},${fileName},/" | head -n 2
         tail -n +2 $RESULTSPATH/$i | sed "s/^/${parentRT},${parentMZ},${fileName},/" >> "$RESULTSPATH/$i.tmp"
-        head -n2 "$RESULTSPATH/$i.tmp"
         mv "$RESULTSPATH/$i.tmp" "$RESULTSPATH/$i"
         #awk -F, 'NR==1 {$1="fileName" FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
         #awk -v filename="$fileName" -F, 'NR>1 {$1=filename FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
@@ -147,7 +148,7 @@ if [ "$RESULTSPATH" != "" ] && [ "$RENAMERESULTS" == "true" ]; then
         #awk -v rt="$parentRT" -F, 'NR>1 {$1=rt FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
         # check if the header has been written.
         if [ "$headerFlag" != "0" ]; then
-           sed '1d' $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp"; mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i 
+           sed -i '1d' $RESULTSPATH/$i
         fi
         # save results
         cat "$RESULTSPATH/$i" >> $outputFile
