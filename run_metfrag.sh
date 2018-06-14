@@ -80,11 +80,12 @@ else
     IFS=',' read -r -a files <<< $PARAMETERFILES
 fi
 # loop over file names to create commands arguments for gnu parallel
-cmdfile=$(mktemp)
+# cmdfile=$(mktemp)
+cmdfile=/tmp/commands.txt
 cmdprefix="/usr/local/bin/metfrag -Xmx2048m -Xms1024m "
 for file in "${files[@]}"; do
     while read line; do    
-	cmd="$cmdprefix $(echo \'${line} | tr -d "\"" | sed "s/PeakListString=\(.*\)\s/PeakListString=\"\1\" /" | sed "s/SampleName=.*\/\(.*\)\(\s\|$\)/SampleName=\1 /" | sed "s/SampleName=.*\\\\\/\(.*\)\(\s\|$\)/SampleName=\1 /")"
+	cmd="$cmdprefix $(echo "\'${line}" | tr -d "\"" | sed "s/PeakListString=\(.*\)\s/PeakListString=\"\1\" /" | sed "s/SampleName=.*\/\(.*\)\(\s\|$\)/SampleName=\1 /" | sed "s/SampleName=.*\\\\\/\(.*\)\(\s\|$\)/SampleName=\1 /")"
 	if [ "$ADDITIONALSCORES" != "" ]; then
             # MetFragScoreTypes=FragmenterScore MetFragScoreWeights=1.0
             if [ "$(echo $ADDITIONALSCORES | grep -c 'StatisticalScore')" == 1 ]; then
@@ -117,6 +118,7 @@ headerFlag="0"
 cat $cmdfile | parallel 
 if [ "$RESULTSPATH" != "" ] && [ "$RENAMERESULTS" == "true" ]; then
     for i in $(ls $RESULTSPATH); do
+        echo $i
 	# check number of lines
 	numberOfLines=$(wc -l < $RESULTSPATH/$i)
 	if [ ${numberOfLines} -eq "1" ]; then continue ; fi
@@ -125,6 +127,7 @@ if [ "$RESULTSPATH" != "" ] && [ "$RENAMERESULTS" == "true" ]; then
         parentRT=${filesInfo[1]}
         parentMZ=${filesInfo[2]}
         fileName=$(join _ ${filesInfo[@]:4})
+        echo $filename
         # add file name
         awk -F, 'NR==1 {$1="fileName" FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
         awk -v filename="$fileName" -F, 'NR>1 {$1=filename FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
