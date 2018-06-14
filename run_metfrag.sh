@@ -113,8 +113,8 @@ function join { local IFS="$1"; shift; echo "$*"; }
 # define header flag 
 headerFlag="0"
 # run the command
-cat $cmdfile
-cat $cmdfile | parallel --load 80% --noswap
+# cat $cmdfile | parallel --load 80% --noswap
+cat $cmdfile | parallel 
 if [ "$RESULTSPATH" != "" ] && [ "$RENAMERESULTS" == "true" ]; then
     for i in $(ls $RESULTSPATH); do
 	# check number of lines
