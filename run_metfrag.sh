@@ -130,6 +130,8 @@ if [ "$RESULTSPATH" != "" ] && [ "$RENAMERESULTS" == "true" ]; then
         IFS='_' read -r -a filesInfo <<< $(echo $i)
         parentRT=${filesInfo[1]}
         parentMZ=${filesInfo[2]}
+	echo $parentRT $parentMZ
+        echo ${filesInfo[1]} ${filesInfo[2]}
         fileName=$(join _ ${filesInfo[@]:4})
         echo $filename
         # add file name
