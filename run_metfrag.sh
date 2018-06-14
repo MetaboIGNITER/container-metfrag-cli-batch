@@ -84,7 +84,7 @@ cmdfile=$(mktemp)
 cmdprefix="/usr/local/bin/metfrag -Xmx2048m -Xms1024m "
 for file in "${files[@]}"; do
     while read line; do    
-	cmd="$cmdprefix $(echo ${line} | tr -d "\"" | sed "s/PeakListString=\(.*\)\s/PeakListString=\"\1\" /" | sed "s/SampleName=.*\/\(.*\)\(\s\|$\)/SampleName=\1 /" | sed "s/SampleName=.*\\\\\/\(.*\)\(\s\|$\)/SampleName=\1 /")"
+	cmd="$cmdprefix $(echo \'${line} | tr -d "\"" | sed "s/PeakListString=\(.*\)\s/PeakListString=\"\1\" /" | sed "s/SampleName=.*\/\(.*\)\(\s\|$\)/SampleName=\1 /" | sed "s/SampleName=.*\\\\\/\(.*\)\(\s\|$\)/SampleName=\1 /")"
 	if [ "$ADDITIONALSCORES" != "" ]; then
             # MetFragScoreTypes=FragmenterScore MetFragScoreWeights=1.0
             if [ "$(echo $ADDITIONALSCORES | grep -c 'StatisticalScore')" == 1 ]; then
@@ -103,7 +103,7 @@ for file in "${files[@]}"; do
         else
             cmd="$cmd ResultsPath=$RESULTSPATH"
         fi
-        cmd="$cmd NumberThreads=1"
+        cmd="$cmd NumberThreads=1\'"
         echo $cmd >> $cmdfile
     done < $file
 done
