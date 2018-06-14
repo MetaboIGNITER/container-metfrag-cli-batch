@@ -135,6 +135,7 @@ if [ "$RESULTSPATH" != "" ] && [ "$RENAMERESULTS" == "true" ]; then
         # add file name
         echo parentRT,parentMZ,fileName,$(head -n1 $RESULTSPATH/$i) > "$RESULTSPATH/$i.tmp"
         tail -n +2 $RESULTSPATH/$i | sed "s/^/${parentRT},${parentMZ},${fileName},/" >> "$RESULTSPATH/$i.tmp"
+        head -n2 "$RESULTSPATH/$i.tmp"
         mv "$RESULTSPATH/$i.tmp" "$RESULTSPATH/$i"
         #awk -F, 'NR==1 {$1="fileName" FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
         #awk -v filename="$fileName" -F, 'NR>1 {$1=filename FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
@@ -150,8 +151,10 @@ if [ "$RESULTSPATH" != "" ] && [ "$RENAMERESULTS" == "true" ]; then
         fi
         # save results
         cat "$RESULTSPATH/$i" >> $outputFile
+        echo $outputFile
         headerFlag="1"
     done
+    cat $outputFile
 fi
 if [ "$ZIPFILE" != "" ]; then
     zip -j -r $ZIPFILE $RESULTSPATH
