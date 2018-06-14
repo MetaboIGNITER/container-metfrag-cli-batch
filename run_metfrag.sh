@@ -80,8 +80,7 @@ else
     IFS=',' read -r -a files <<< $PARAMETERFILES
 fi
 # loop over file names to create commands arguments for gnu parallel
-# cmdfile=$(mktemp)
-cmdfile=/tmp/commands.txt
+cmdfile=$(mktemp)
 cmdprefix="/usr/local/bin/metfrag -Xmx2048m -Xms1024m "
 for file in "${files[@]}"; do
     while read line; do    
@@ -116,12 +115,8 @@ headerFlag="0"
 # run the command
 # cat $cmdfile | parallel --load 80% --noswap
 cat $cmdfile | parallel 
-echo $RESULTSPATH
-echo $RENAMERESULTS
 if [ "$RESULTSPATH" != "" ] && [ "$RENAMERESULTS" == "true" ]; then
-    ls $RESULTSPATH
     for i in $(ls $RESULTSPATH); do
-        echo $i
 	# check number of lines
 	numberOfLines=$(wc -l < $RESULTSPATH/$i)
         echo $numberOfLines
@@ -131,23 +126,11 @@ if [ "$RESULTSPATH" != "" ] && [ "$RENAMERESULTS" == "true" ]; then
         IFS='_' read -r -a filesInfo <<< "$i"
         parentRT=${filesInfo[1]}
         parentMZ=${filesInfo[2]}
-	echo $parentRT $parentMZ
-        echo ${filesInfo[1]} ${filesInfo[2]}
         fileName=$(join _ ${filesInfo[@]:4})
-        echo $filename
         # add file name
         echo parentRT,parentMZ,fileName,$(head -n1 $RESULTSPATH/$i) > "$RESULTSPATH/$i.tmp"
-	echo "to include = ${parentRT},${parentMZ},${fileName}"
-        tail -n +2 $RESULTSPATH/$i | sed "s/^/${parentRT},${parentMZ},${fileName},/" | head -n 2
         tail -n +2 $RESULTSPATH/$i | sed "s/^/${parentRT},${parentMZ},${fileName},/" >> "$RESULTSPATH/$i.tmp"
         mv "$RESULTSPATH/$i.tmp" "$RESULTSPATH/$i"
-        #awk -F, 'NR==1 {$1="fileName" FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
-        #awk -v filename="$fileName" -F, 'NR>1 {$1=filename FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
-        # add mz
-        #awk -F, 'NR==1 {$1="parentMZ" FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
-        #awk -v mz="$parentMZ" -F, 'NR>1 {$1=mz FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
-        # add RT
-        #awk -F, 'NR==1 {$1="parentRT" FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
         #awk -v rt="$parentRT" -F, 'NR>1 {$1=rt FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
         # check if the header has been written.
         if [ "$headerFlag" != "0" ]; then
@@ -155,7 +138,6 @@ if [ "$RESULTSPATH" != "" ] && [ "$RENAMERESULTS" == "true" ]; then
         fi
         # save results
         cat "$RESULTSPATH/$i" >> $outputFile
-        echo $outputFile
         headerFlag="1"
     done
     cat $outputFile
