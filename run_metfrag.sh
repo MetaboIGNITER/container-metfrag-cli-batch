@@ -125,6 +125,7 @@ if [ "$RESULTSPATH" != "" ] && [ "$RENAMERESULTS" == "true" ]; then
 	# check number of lines
 	numberOfLines=$(wc -l < $RESULTSPATH/$i)
 	if [ ${numberOfLines} -eq "1" ]; then continue ; fi
+        if [ ${numberOfLines} -eq "0" ]; then continue ; fi
         # extract mz, RT and fileName
         IFS='_' read -r -a filesInfo <<< $(echo $i)
         parentRT=${filesInfo[1]}
@@ -132,17 +133,20 @@ if [ "$RESULTSPATH" != "" ] && [ "$RENAMERESULTS" == "true" ]; then
         fileName=$(join _ ${filesInfo[@]:4})
         echo $filename
         # add file name
-        awk -F, 'NR==1 {$1="fileName" FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
-        awk -v filename="$fileName" -F, 'NR>1 {$1=filename FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
+        echo parentRT,parentMZ,fileName,$(head -n1 $RESULTSPATH/$i) > "$RESULTSPATH/$i.tmp"
+        tail -n +2 $RESULTSPATH/$i | sed "s/^/${parentRT},${parentMZ},${fileName},/" >> "$RESULTSPATH/$i.tmp"
+        mv "$RESULTSPATH/$i.tmp" "$RESULTSPATH/$i"
+        #awk -F, 'NR==1 {$1="fileName" FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
+        #awk -v filename="$fileName" -F, 'NR>1 {$1=filename FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
         # add mz
-        awk -F, 'NR==1 {$1="parentMZ" FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
-        awk -v mz="$parentMZ" -F, 'NR>1 {$1=mz FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
+        #awk -F, 'NR==1 {$1="parentMZ" FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
+        #awk -v mz="$parentMZ" -F, 'NR>1 {$1=mz FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
         # add RT
-        awk -F, 'NR==1 {$1="parentRT" FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
-        awk -v rt="$parentRT" -F, 'NR>1 {$1=rt FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
+        #awk -F, 'NR==1 {$1="parentRT" FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
+        #awk -v rt="$parentRT" -F, 'NR>1 {$1=rt FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
         # check if the header has been written.
         if [ "$headerFlag" != "0" ]; then
-        sed '1d' $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp"; mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i 
+           sed '1d' $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp"; mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i 
         fi
         # save results
         cat "$RESULTSPATH/$i" >> $outputFile
