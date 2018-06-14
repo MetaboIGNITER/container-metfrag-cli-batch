@@ -116,7 +116,10 @@ headerFlag="0"
 # run the command
 # cat $cmdfile | parallel --load 80% --noswap
 cat $cmdfile | parallel 
+echo $RESULTSPATH
+echo $RENAMERESULTS
 if [ "$RESULTSPATH" != "" ] && [ "$RENAMERESULTS" == "true" ]; then
+    ls $RESULTSPATH
     for i in $(ls $RESULTSPATH); do
         echo $i
 	# check number of lines
