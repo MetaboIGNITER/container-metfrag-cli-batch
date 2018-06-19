@@ -81,12 +81,15 @@ else
 fi
 # loop over file names to create commands arguments for gnu parallel
 cmdfile=$(mktemp)
-cmdprefix="java -Xmx2048m -Xms1024m -jar /usr/local/bin/MetFragCLI.jar"
+cmdprefix="/usr/local/bin/metfrag -Xmx2048m -Xms1024m "
 for file in "${files[@]}"; do
     while read line; do    
-	cmd="$cmdprefix $(echo ${line} | tr -d "\"" | sed "s/PeakListString=\(.*\)\s/PeakListString=\"\1\" /" | sed "s/SampleName=.*\/\(.*\)\(\s\|$\)/SampleName=\1 /" | sed "s/SampleName=.*\\\\\/\(.*\)\(\s\|$\)/SampleName=\1 /")"
+	cmd="$cmdprefix $(echo "\'${line}" | tr -d "\"" | sed "s/PeakListString=\(.*\)\s/PeakListString=\"\1\" /" | sed "s/SampleName=.*\/\(.*\)\(\s\|$\)/SampleName=\1 /" | sed "s/SampleName=.*\\\\\/\(.*\)\(\s\|$\)/SampleName=\1 /")"
 	if [ "$ADDITIONALSCORES" != "" ]; then
             # MetFragScoreTypes=FragmenterScore MetFragScoreWeights=1.0
+            if [ "$(echo $ADDITIONALSCORES | grep -c 'StatisticalScore')" == 1 ]; then
+               ADDITIONALSCORES=$(echo $ADDITIONALSCORES | sed "s/StatisticalScore/AutomatedPeakFingerprintAnnotationScore,AutomatedLossFingerprintAnnotationScore/")
+            fi
             cmd=$(echo $(echo $cmd | sed "s/MetFragScoreTypes=[A-Za-z0-9]\+/MetFragScoreTypes=FragmenterScore,$ADDITIONALSCORES/")" MetFragScoreWeights=1.0,"$(echo $ADDITIONALSCORES | sed "s/[A-Za-z0-9]\+/1.0/g")) 
         fi
         if [ "$ADDITIONALPARAMETERS" != "" ]; then
@@ -100,7 +103,7 @@ for file in "${files[@]}"; do
         else
             cmd="$cmd ResultsPath=$RESULTSPATH"
         fi
-        cmd="$cmd NumberThreads=1"
+        cmd="$cmd NumberThreads=1\'"
         echo $cmd >> $cmdfile
     done < $file
 done
@@ -110,29 +113,27 @@ function join { local IFS="$1"; shift; echo "$*"; }
 # define header flag 
 headerFlag="0"
 # run the command
-cat $cmdfile | parallel --load 80% --noswap
+# cat $cmdfile | parallel --load 80% --noswap
+cat $cmdfile | parallel 
 if [ "$RESULTSPATH" != "" ] && [ "$RENAMERESULTS" == "true" ]; then
     for i in $(ls $RESULTSPATH); do
 	# check number of lines
 	numberOfLines=$(wc -l < $RESULTSPATH/$i)
+        echo $numberOfLines
 	if [ ${numberOfLines} -eq "1" ]; then continue ; fi
+        if [ ${numberOfLines} -eq "0" ]; then continue ; fi
         # extract mz, RT and fileName
-        IFS='_' read -r -a filesInfo <<< $(echo $i)
+        IFS='_' read -r -a filesInfo <<< "$i"
         parentRT=${filesInfo[1]}
         parentMZ=${filesInfo[2]}
         fileName=$(join _ ${filesInfo[@]:4})
         # add file name
-        awk -F, 'NR==1 {$1="fileName" FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
-        awk -v filename="$fileName" -F, 'NR>1 {$1=filename FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
-        # add mz
-        awk -F, 'NR==1 {$1="parentMZ" FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
-        awk -v mz="$parentMZ" -F, 'NR>1 {$1=mz FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
-        # add RT
-        awk -F, 'NR==1 {$1="parentRT" FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
-        awk -v rt="$parentRT" -F, 'NR>1 {$1=rt FS $1;}1'  OFS=, $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp" && mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i
+        echo parentRT,parentMZ,fileName,$(head -n1 $RESULTSPATH/$i) > "$RESULTSPATH/$i.tmp"
+        tail -n +2 $RESULTSPATH/$i | sed "s/^/${parentRT},${parentMZ},${fileName},/" >> "$RESULTSPATH/$i.tmp"
+        mv "$RESULTSPATH/$i.tmp" "$RESULTSPATH/$i"
         # check if the header has been written.
         if [ "$headerFlag" != "0" ]; then
-        sed '1d' $RESULTSPATH/$i > "$RESULTSPATH/$i.tmp"; mv "$RESULTSPATH/$i.tmp" $RESULTSPATH/$i 
+           sed -i '1d' $RESULTSPATH/$i
         fi
         # save results
         cat "$RESULTSPATH/$i" >> $outputFile
