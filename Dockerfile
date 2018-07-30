@@ -4,12 +4,15 @@ FROM quay.io/biocontainers/metfrag:2.4.5--1
 MAINTAINER PhenoMeNal-H2020 Project ( phenomenal-h2020-users@googlegroups.com )
 
 LABEL software.version=2.4.5
-LABEL version=0.7
+LABEL version=0.8
+LABEL software=metfrag-cli-batch
+
+MAINTAINER PhenoMeNal-H2020 Project ( phenomenal-h2020-users@googlegroups.com )
 
 LABEL software=metfrag-cli-batch
 LABEL Description="MetFrag command line interface for batch processing."
 LABEL website="https://msbi.ipb-halle.de/MetFragBeta/"
-LABEL documentation="https://github.com/c-ruttkies/MetFragBate"
+LABEL documentation="https://github.com/c-ruttkies/MetFragBeta"
 LABEL license="https://github.com/phnmnl/container-midcor/blob/master/License.txt"
 LABEL tags="Metabolomics"
 
