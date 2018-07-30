@@ -80,7 +80,11 @@ else
     IFS=',' read -r -a files <<< $PARAMETERFILES
 fi
 # loop over file names to create commands arguments for gnu parallel
-cmdfile=$(mktemp)
+if [ "$RESULTSFILE" != "" ]; then
+    cmdfile=${RESULTSFILE}.cmd
+else
+    cmdfile=${RESULTSPATH}/commands.cmd
+fi
 cmdprefix="/usr/local/bin/metfrag -Xmx2048m -Xms1024m "
 for file in "${files[@]}"; do
     while read line; do    
@@ -143,3 +147,4 @@ fi
 if [ "$ZIPFILE" != "" ]; then
     zip -j -r $ZIPFILE $RESULTSPATH
 fi
+rm $cmdfile
