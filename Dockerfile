@@ -2,7 +2,7 @@ FROM quay.io/biocontainers/metfrag:2.4.5--1
 #FROM ubuntu:16.04
 
 LABEL software.version=2.4.5
-LABEL version=0.7
+LABEL version=0.8
 LABEL software=metfrag-cli-batch
 
 MAINTAINER PhenoMeNal-H2020 Project ( phenomenal-h2020-users@googlegroups.com )
