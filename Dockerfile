@@ -4,7 +4,7 @@ FROM quay.io/biocontainers/metfrag:2.4.5--1
 MAINTAINER PhenoMeNal-H2020 Project ( phenomenal-h2020-users@googlegroups.com )
 
 LABEL software.version=2.4.5
-LABEL version=0.8
+LABEL version=0.9
 LABEL software=metfrag-cli-batch
 
 MAINTAINER PhenoMeNal-H2020 Project ( phenomenal-h2020-users@googlegroups.com )
