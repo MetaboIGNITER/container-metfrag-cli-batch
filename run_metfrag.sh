@@ -119,6 +119,7 @@ headerFlag="0"
 # run the command
 # cat $cmdfile | parallel --load 80% --noswap
 cat $cmdfile | parallel 
+rm $cmdfile
 if [ "$RESULTSPATH" != "" ] && [ "$RENAMERESULTS" == "true" ]; then
     for i in $(ls $RESULTSPATH); do
 	# check number of lines
@@ -147,4 +148,3 @@ fi
 if [ "$ZIPFILE" != "" ]; then
     zip -j -r $ZIPFILE $RESULTSPATH
 fi
-rm $cmdfile
