@@ -13,7 +13,7 @@ LABEL Description="MetFrag command line interface for batch processing."
 #RUN apt-get -y update
 
 # Install development files needed
-#RUN apt-get -y install wget openjdk-8-jdk-headless parallel zip 
+#RUN apt-get -y install wget openjdk-8-jdk-headless parallel zip
 
 # Clean up
 #RUN apt-get -y clean && apt-get -y autoremove && rm -rf /var/lib/{cache,log}/ /tmp/* /var/tmp/*
@@ -37,4 +37,3 @@ RUN chmod +x /usr/local/bin/run_metfrag.sh
 
 # Define Entry point script
 ENTRYPOINT ["metfrag"]
-
